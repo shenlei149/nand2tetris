@@ -1,0 +1,208 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux8Way16.hdl
+
+/**
+ * 8-way 16-bit multiplexor:
+ * out = a if sel == 000
+ *       b if sel == 001
+ *       etc.
+ *       h if sel == 111
+ */
+
+CHIP Mux8Way16 {
+    IN a[16], b[16], c[16], d[16],
+       e[16], f[16], g[16], h[16],
+       sel[3];
+    OUT out[16];
+
+    PARTS:
+    Not(in=sel[0], out=nsel0);
+    Not(in=sel[1], out=nsel1);
+    Not(in=sel[2], out=nsel2);
+
+    And (a=nsel2, b=nsel1, out=sela1);
+    And (a=sela1, b=nsel0, out=sela);
+
+    And (a=nsel2, b=nsel1, out=selb1);
+    And (a=selb1, b=sel[0], out=selb);
+
+    And (a=nsel2, b=sel[1], out=selc1);
+    And (a=selc1, b=nsel0, out=selc);
+
+    And (a=nsel2, b=sel[1], out=seld1);
+    And (a=seld1, b=sel[0], out=seld);
+
+    And (a=sel[2], b=nsel1, out=sele1);
+    And (a=sele1, b=nsel0, out=sele);
+
+    And (a=sel[2], b=nsel1, out=self1);
+    And (a=self1, b=sel[0], out=self);
+
+    And (a=sel[2], b=sel[1], out=selg1);
+    And (a=selg1, b=nsel0, out=selg);
+
+    And (a=sel[2], b=sel[1], out=selh1);
+    And (a=selh1, b=sel[0], out=selh);
+
+    And16 (a=a,
+           b[0]=sela,
+           b[1]=sela,
+           b[2]=sela,
+           b[3]=sela,
+           b[4]=sela,
+           b[5]=sela,
+           b[6]=sela,
+           b[7]=sela,
+           b[8]=sela,
+           b[9]=sela,
+           b[10]=sela,
+           b[11]=sela,
+           b[12]=sela,
+           b[13]=sela,
+           b[14]=sela,
+           b[15]=sela,
+           out=outa);
+
+    And16 (a=b,
+           b[0]=selb,
+           b[1]=selb,
+           b[2]=selb,
+           b[3]=selb,
+           b[4]=selb,
+           b[5]=selb,
+           b[6]=selb,
+           b[7]=selb,
+           b[8]=selb,
+           b[9]=selb,
+           b[10]=selb,
+           b[11]=selb,
+           b[12]=selb,
+           b[13]=selb,
+           b[14]=selb,
+           b[15]=selb,
+           out=outb);
+
+    And16 (a=c,
+           b[0]=selc,
+           b[1]=selc,
+           b[2]=selc,
+           b[3]=selc,
+           b[4]=selc,
+           b[5]=selc,
+           b[6]=selc,
+           b[7]=selc,
+           b[8]=selc,
+           b[9]=selc,
+           b[10]=selc,
+           b[11]=selc,
+           b[12]=selc,
+           b[13]=selc,
+           b[14]=selc,
+           b[15]=selc,
+           out=outc);
+
+    And16 (a=d,
+           b[0]=seld,
+           b[1]=seld,
+           b[2]=seld,
+           b[3]=seld,
+           b[4]=seld,
+           b[5]=seld,
+           b[6]=seld,
+           b[7]=seld,
+           b[8]=seld,
+           b[9]=seld,
+           b[10]=seld,
+           b[11]=seld,
+           b[12]=seld,
+           b[13]=seld,
+           b[14]=seld,
+           b[15]=seld,
+           out=outd);
+
+    And16 (a=e,
+           b[0]=sele,
+           b[1]=sele,
+           b[2]=sele,
+           b[3]=sele,
+           b[4]=sele,
+           b[5]=sele,
+           b[6]=sele,
+           b[7]=sele,
+           b[8]=sele,
+           b[9]=sele,
+           b[10]=sele,
+           b[11]=sele,
+           b[12]=sele,
+           b[13]=sele,
+           b[14]=sele,
+           b[15]=sele,
+           out=oute);
+
+    And16 (a=f,
+           b[0]=self,
+           b[1]=self,
+           b[2]=self,
+           b[3]=self,
+           b[4]=self,
+           b[5]=self,
+           b[6]=self,
+           b[7]=self,
+           b[8]=self,
+           b[9]=self,
+           b[10]=self,
+           b[11]=self,
+           b[12]=self,
+           b[13]=self,
+           b[14]=self,
+           b[15]=self,
+           out=outf);
+
+    And16 (a=g,
+           b[0]=selg,
+           b[1]=selg,
+           b[2]=selg,
+           b[3]=selg,
+           b[4]=selg,
+           b[5]=selg,
+           b[6]=selg,
+           b[7]=selg,
+           b[8]=selg,
+           b[9]=selg,
+           b[10]=selg,
+           b[11]=selg,
+           b[12]=selg,
+           b[13]=selg,
+           b[14]=selg,
+           b[15]=selg,
+           out=outg);
+
+    And16 (a=h,
+           b[0]=selh,
+           b[1]=selh,
+           b[2]=selh,
+           b[3]=selh,
+           b[4]=selh,
+           b[5]=selh,
+           b[6]=selh,
+           b[7]=selh,
+           b[8]=selh,
+           b[9]=selh,
+           b[10]=selh,
+           b[11]=selh,
+           b[12]=selh,
+           b[13]=selh,
+           b[14]=selh,
+           b[15]=selh,
+           out=outh);
+
+    Or16 (a=outa, b=outb, out=outab);
+    Or16 (a=outc, b=outd, out=outcd);
+    Or16 (a=oute, b=outf, out=outef);
+    Or16 (a=outg, b=outh, out=outgh);
+    Or16 (a=outab, b=outcd, out=outabcd);
+    Or16 (a=outef, b=outgh, out=outefgh);
+    Or16 (a=outabcd, b=outefgh, out=out);
+}

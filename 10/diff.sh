@@ -1,0 +1,14 @@
+diff ExpressionLessSquare/MainT.xml ExpressionLessSquare/MainT.xml.g
+diff ExpressionLessSquare/SquareT.xml ExpressionLessSquare/SquareT.xml.g
+diff ExpressionLessSquare/SquareGameT.xml ExpressionLessSquare/SquareGameT.xml.g
+diff ExpressionLessSquare/Main.xml ExpressionLessSquare/Main.xml.g
+diff ExpressionLessSquare/Square.xml ExpressionLessSquare/Square.xml.g
+diff ExpressionLessSquare/SquareGame.xml ExpressionLessSquare/SquareGame.xml.g
+diff Square/MainT.xml Square/MainT.xml.g
+diff Square/SquareT.xml Square/SquareT.xml.g
+diff Square/SquareGameT.xml Square/SquareGameT.xml.g
+diff Square/Main.xml Square/Main.xml.g
+diff Square/Square.xml Square/Square.xml.g
+diff Square/SquareGame.xml Square/SquareGame.xml.g
+diff ArrayTest/MainT.xml ArrayTest/MainT.xml.g
+diff ArrayTest/Main.xml ArrayTest/Main.xml.g

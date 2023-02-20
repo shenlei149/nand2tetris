@@ -1,0 +1,12 @@
+./translator ../07/StackArithmetic/SimpleAdd/SimpleAdd.vm
+./translator ../07/StackArithmetic/StackTest/StackTest.vm
+./translator ../07/MemoryAccess/BasicTest/BasicTest.vm
+./translator ../07/MemoryAccess/PointerTest/PointerTest.vm
+./translator ../07/MemoryAccess/StaticTest/StaticTest.vm
+# 08
+./translator ProgramFlow/BasicLoop/BasicLoop.vm
+./translator ProgramFlow/FibonacciSeries/FibonacciSeries.vm
+./translator FunctionCalls/SimpleFunction/SimpleFunction.vm
+./translator FunctionCalls/NestedCall/Sys.vm
+./translator FunctionCalls/FibonacciElement/
+./translator FunctionCalls/StaticsTest/

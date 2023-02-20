@@ -1,0 +1,86 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/Memory.hdl
+
+/**
+ * The complete address space of the Hack computer's memory,
+ * including RAM and memory-mapped I/O. 
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = Memory[address(t)](t)
+ *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory 
+ * location specified by address. If load==1, the in value is loaded 
+ * into the memory location specified by address. This value becomes 
+ * available through the out output from the next time step onward.
+ * Address space rules:
+ * Only the upper 16K+8K+1 words of the Memory chip are used. 
+ * Access to address>0x6000 is invalid. Access to any address in 
+ * the range 0x4000-0x5FFF results in accessing the screen memory 
+ * map. Access to address 0x6000 results in accessing the keyboard 
+ * memory map. The behavior in these addresses is described in the 
+ * Screen and Keyboard chip specifications given in the book.
+ */
+
+CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+    // RAM16K (in[16], load, address[14], out[16])
+    // Screen (in[16], address[13], load, out[16])
+    // Keyboard (out[16])
+
+    // address[14] == 0, use RAM16K
+    Not (in=address[14], out=useram);
+    And (a=useram, b=load, out=loadram);
+    RAM16K(in=in, load=loadram, address=address[0..13], out=outram);
+
+    // address[14] == 1, address[13] = 0, use Screen
+    Not (in=address[13], out=usescreen1);
+    And (a=address[14], b=usescreen1, out=usescreen);
+    And (a=usescreen, b=load, out=loadscreen);
+    Screen (in=in, address=address[0..12], load=loadscreen, out=outscreen);
+
+    // Keyboard: 110 0000 0000 0000
+    And (a=address[14], b=address[13], out=usekey1314);
+    Not (in=address[12], out=usekey12);
+    And (a=usekey1314, b=usekey12, out=usekeyfourth);
+
+    Not (in=address[11], out=usekey11);
+    Not (in=address[10], out=usekey10);
+    Not (in=address[9], out=usekey9);
+    Not (in=address[8], out=usekey8);
+    Not (in=address[7], out=usekey7);
+    Not (in=address[6], out=usekey6);
+    Not (in=address[5], out=usekey5);
+    Not (in=address[4], out=usekey4);
+    Not (in=address[3], out=usekey3);
+    Not (in=address[2], out=usekey2);
+    Not (in=address[1], out=usekey1);
+    Not (in=address[0], out=usekey0);
+
+    And (a=usekey0, b=usekey1, out=usekey01);
+    And (a=usekey2, b=usekey3, out=usekey23);
+    And (a=usekey01, b=usekey23, out=usekeyfirst);
+
+    And (a=usekey4, b=usekey5, out=usekey45);
+    And (a=usekey6, b=usekey7, out=usekey67);
+    And (a=usekey45, b=usekey67, out=usekeysecond);
+
+    And (a=usekey8, b=usekey9, out=usekey89);
+    And (a=usekey10, b=usekey11, out=usekey1011);
+    And (a=usekey89, b=usekey1011, out=usekeythird);
+
+    And (a=usekeyfirst, b=usekeysecond, out=usekeylower);
+    And (a=usekeythird, b=usekeyfourth, out=usekeyupper);
+    And (a=usekeylower, b=usekeyupper, out=usekeyboard);
+
+    Keyboard(out=outkeyboard);
+
+    // Select
+    Mux16 (a=false, b=outram, sel=useram, out=out1);
+    Mux16 (a=out1, b=outscreen, sel=usescreen, out=out2);
+    Mux16 (a=out2, b=outkeyboard, sel=usekeyboard, out=out);
+}

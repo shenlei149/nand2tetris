@@ -1,0 +1,221 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 256 rows (indexed 0..255, top to bottom)
+ * of 512 pixels each (indexed 0..511, left to right). The top left pixel on 
+ * the screen is indexed (0,0).
+ */
+class Screen {
+
+    static boolean color;
+    static int base;
+    static Array twoTo;
+
+    /** Initializes the Screen. */
+    function void init() {
+        let color = true;
+        let base = 16384;
+
+        let twoTo = Array.new(16);
+        let twoTo[0]=1;
+        let twoTo[1]=2;
+        let twoTo[2]=4;
+        let twoTo[3]=8;
+        let twoTo[4]=16;
+        let twoTo[5]=32;
+        let twoTo[6]=64;
+        let twoTo[7]=128;
+        let twoTo[8]=256;
+        let twoTo[9]=512;
+        let twoTo[10]=1024;
+        let twoTo[11]=2048;
+        let twoTo[12]=4096;
+        let twoTo[13]=8192;
+        let twoTo[14]=16384;
+
+        return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+        var int x, y;
+        do Screen.setColor(false);
+
+        let x = 0;
+        while (x < 256) {
+            let y = 0;
+            while (y < 512) {
+                do Screen.drawPixel(x, y);
+
+                let y = y + 1;
+            }
+
+            let x = x + 1;
+        }
+
+        return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+        let color = b;
+
+        return;
+    }
+
+    function int clearBit(int n, int i) {
+        if (i = 15) {
+            return Math.abs(n);
+        } else {
+            if((n & twoTo[i]) > 0) {
+                return (n - twoTo[i]);
+            } else {
+                return n;
+            }
+        }
+    }
+
+    function int setBit(int n, int i) {
+        if (i = 15) {
+            if (n < 0) {
+                return n;
+            } else {
+                return n - 16384 - 16384;
+            }
+        } else {
+            if((n & twoTo[i]) > 0) {
+                return n;
+            } else {
+                return (n + twoTo[i]);
+            }
+        }
+    }
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+        var int address;
+        var int value, i, newvalue;
+
+        let address = base + (y * 32) + (x / 16);
+        let value = Memory.peek(address);
+        let i = x - ((x / 16) * 16);
+        if (color) {
+            let newvalue = Screen.setBit(value, i);
+        } else {
+            let newvalue = Screen.clearBit(value, i);
+        }
+
+        do Memory.poke(address, newvalue);
+
+        return;
+    }
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, dxabs, dyabs;
+        var int a, b, diff;
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+
+        if ((dx = 0) & (dy = 0)) {
+            return;
+        }
+
+        let a = 0;
+        let b = 0;
+        let diff = 0;
+        let dxabs = Math.abs(dx);
+        let dyabs = Math.abs(dy);
+
+        while ((~(a > dxabs)) & (~(b > dyabs))) {
+            if ((dx > 0) & (~(dy < 0))) {
+                do Screen.drawPixel(x1 + a, y1 + b);
+                if (~(diff > 0)) {
+                    let a = a + 1;
+                    let diff = diff + dy;
+                } else {
+                    let b = b + 1;
+                    let diff = diff - dx;
+                }
+            } else {
+                if ((~(dx < 0)) & (dy < 0)) {
+                    do Screen.drawPixel(x1 + a, y1 - b);
+                    if (diff < 0) {
+                        let a = a + 1;
+                        let diff = diff - dy;
+                    } else {
+                        let b = b + 1;
+                        let diff = diff - dx;
+                    }
+                } else {
+                    if ((~(dx > 0)) & (dy > 0)) {
+                        do Screen.drawPixel(x1 - a, y1 + b);
+                        if (diff < 0) {
+                            let a = a + 1;
+                            let diff = diff + dy;
+                        } else {
+                            let b = b + 1;
+                            let diff = diff + dx;
+                        }
+                    } else {
+                        do Screen.drawPixel(x1 - a, y1 - b);
+                        if (~(diff > 0)) {
+                            let a = a + 1;
+                            let diff = diff - dy;
+                        } else {
+                            let b = b + 1;
+                            let diff = diff + dx;
+                        }
+                    }
+                }
+            }
+        }
+
+        return;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int x, y;
+
+        let x = x1;
+        while(~(x > x2)) {
+            let y = y1;
+            while (~(y > y2)) {
+                do Screen.drawPixel(x, y);
+
+                let y = y + 1;
+            }
+
+            let x = x + 1;
+        }
+
+        return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+        var int dy, newy, square, sqrt, x1, x2;
+
+        let dy = -r;
+        while(~(dy > r)) {
+            let newy = y + dy;
+            let square = (r * r) - (dy * dy);
+            let sqrt = Math.sqrt(square);
+            let x1 = x - sqrt;
+            let x2 = x + sqrt;
+            do Screen.drawLine(x1, newy, x2, newy);
+
+            let dy = dy + 1;
+        }
+
+        return;
+    }
+}
